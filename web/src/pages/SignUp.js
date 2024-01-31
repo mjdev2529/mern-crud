@@ -8,6 +8,7 @@ export default function SignUp() {
         <input type="text" placeholder="Username" id="username" className="bg-slate-100 p-3 rounded-lg" />
         <input type="text" placeholder="Email" id="email" className="bg-slate-100 p-3 rounded-lg" />
         <input type="password" placeholder="Password" id="password" className="bg-slate-100 p-3 rounded-lg" />
+        <input type="password" placeholder="Confirm Password" id="password2" className="bg-slate-100 p-3 rounded-lg" />
         <button className='bg-slate-700 text-white p-3 rounded-lg uppercase hover:opacity-95 disabled:opacity-80'>Sign up</button>
         {/* <button className='bg-slate- text-white p-3 rounded-lg'>Sign up</button> */}
       </form>
