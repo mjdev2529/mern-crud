@@ -36,16 +36,19 @@ export const signin = async (req, res, next) => {
   const value = [email];
 
   db.query(sql, value, (err, result) => {
+    
     if (err) {
       console.log(err);
-      next(err);
+      // next(err);
+      return res.status(200).json({success: false, message: "Invalid credentials"});
     } else {
       if (result.length === 0) {
-        return next(errorHandler(401, "Invalid credentials"));
+        return res.status(200).json({success: false, message: "Invalid credentials"});
       }
+      console.log("res: ",result);
       const validUser = result[0];
       const validPassword = bcrypt.compareSync(password, validUser.password);
-      if (!validPassword) return next(errorHandler(401, "Invalid credentials"));
+      if (!validPassword) return res.status(200).json({success: false, message: "Invalid credentials"});
       const token = jwt.sign({ id: validUser.user_id }, process.env.JWT_SECRET);
       delete validUser.password;
       const exp = new Date(Date.now() + 3600000); // Set expiry date to 1 hour from now
