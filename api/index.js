@@ -1,7 +1,8 @@
 import express from "express";
-import mongoose from "mongoose";
+// import mongoose from "mongoose";
 import dotenv from "dotenv";
 import cors from "cors";
+import cookieParser from "cookie-parser";
 import userRoutes from "./routes/user.route.js";
 import authRoutes from "./routes/auth.route.js";
 dotenv.config();
@@ -16,13 +17,16 @@ dotenv.config();
 //   });
 
 const app = express();
+
+//CONFIGURE EXPRESS APP
 app.use(express.json());
+app.use(cookieParser());
 app.use(cors({
-  origin: true,
-  credentials: true
+    origin: true,
+    credentials: true
 }));
 
-app.listen(3000);
+app.listen(process.env.PORT);
 
 // routes
 app.use("/api/user", userRoutes);

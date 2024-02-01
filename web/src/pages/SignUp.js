@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { request } from "../helper";
+import axios from "axios";
 
 export default function SignUp() {
   const [formData, setFormData] = useState({});
@@ -19,7 +20,7 @@ export default function SignUp() {
 
     if(formData.password === formData.password2){
       try {
-        const res = await request('POST', '/auth/sign-up', formData);
+        const res = await axios.post('/auth/sign-up', formData);
         console.log(res);
         setLoading(false);
         setError(false);

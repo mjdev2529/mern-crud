@@ -1,11 +1,15 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { request } from "../helper";
+import axios from "axios";
 
 
 export default function SignIn() {
 
   const [formData, setFormData] = useState({});
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(false);
+  const navigate = useNavigate();
 
   const inputField = (e) => {
     const { id, value } = e.target;
@@ -15,6 +19,29 @@ export default function SignIn() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
+
+    
+    try {
+      const res = await axios.post('/auth/sign-in', formData);
+      console.log(res);
+      setLoading(false);
+      setError(false);
+
+      if(res.success === false){
+        setError(true);
+        return;
+      }
+        
+      alert("Success: Logging in, Please wait...");
+      setTimeout(()=>{
+        navigate("/home");
+      },500);
+
+    } catch (error) {
+      console.log(error);
+      setLoading(false);
+      setError(true);
+    }
   }
 
   return (
@@ -45,6 +72,7 @@ export default function SignIn() {
           <span className="text-blue-500">Sign up</span>
         </Link>
       </div>
+      <p className="text-red-700 mt-5">{ error && "Error: Something went wrong." }</p>
     </div>
   )
 }
