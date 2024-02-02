@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 // import { request } from "../helper";
 import axios from "axios";
+import OAuth from "../component/OAuth";
 
 export default function SignUp() {
   const [formData, setFormData] = useState({});
@@ -21,12 +22,12 @@ export default function SignUp() {
     if(formData.password === formData.password2){
       try {
         const res = await axios.post('/auth/sign-up', formData);
-        console.log(res);
+        console.log("res: ",res);
         setLoading(false);
         setError(false);
 
-        if(res.success === false){
-          setError(true);
+        if(res.data.success === false){
+          setError({message: res.data.message});
           return;
         }
           
@@ -79,8 +80,8 @@ export default function SignUp() {
         />
         <button disabled={loading} className="bg-slate-700 text-white p-3 rounded-lg uppercase hover:opacity-95 disabled:opacity-80">
           { loading ? "loading..." : "Sign up" }
-        </button> 
-        {/* <button className='bg-slate- text-white p-3 rounded-lg'>Sign up</button> */}
+        </button>
+        <OAuth />
       </form>
       <div className="flex gap-2 mt-5">
         <p>Have an account?</p>
@@ -88,7 +89,7 @@ export default function SignUp() {
           <span className="text-blue-500">Sign in</span>
         </Link>
       </div>
-      <p className="text-red-700 mt-5">{ error && "Error: Something went wrong." }</p>
+      <p className="text-red-700 mt-5">{ error ? error.message || "Error: Something went wrong." : "" }</p>
     </div>
   );
 }
