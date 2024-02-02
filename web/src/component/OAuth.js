@@ -3,10 +3,12 @@ import { app } from "../firebase";
 import axios from "axios";
 import { useDispatch } from "react-redux";
 import { signInSuccess } from "../redux/user/userSlice";
+import { useNavigate } from "react-router-dom";
 
 export default function OAuth() {
 
   const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   const handleButtonClick = async () => {
     try {
@@ -21,7 +23,10 @@ export default function OAuth() {
       };
 
       const res = await axios.post("auth/google", googleData);
-      dispatch(signInSuccess(res));
+      dispatch(signInSuccess(res.data));
+      setTimeout(()=>{
+        navigate("/home");
+      },500);
     } catch (error) {
       console.log("Connection Error", error);
     }

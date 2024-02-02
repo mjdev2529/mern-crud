@@ -33,9 +33,9 @@ export default function SignIn() {
       dispatch(signInSuccess(res.data));
         
       alert("Success: Logging in, Please wait...");
-      // setTimeout(()=>{
-      //   navigate("/home");
-      // },500);
+      setTimeout(()=>{
+        navigate("/home");
+      },500);
   
     } catch (error) {
       console.log("res: ",error);
