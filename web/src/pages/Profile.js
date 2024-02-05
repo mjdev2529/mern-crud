@@ -7,15 +7,13 @@ import {
   uploadBytesResumable,
 } from "firebase/storage";
 import { app } from "../firebase";
-import { signInFailure, signInStart, signInSuccess } from "../redux/user/userSlice";
+import { updateUserFailure, updateUserStart, updateUserSuccess } from "../redux/user/userSlice";
 import axios from "axios";
 
 export default function Profile() {
-  const { currentUser } = useSelector((state) => state.user);
   const dispatch = useDispatch();
   const fileRef = useRef(null);
-
-  const { loading, error } = useSelector((state) => state.user);
+  const { currentUser, loading, error } = useSelector((state) => state.user);
 
   const [image, setImage] = useState(undefined);
   const [uploadProgress, setUploadProgress] = useState(0);
@@ -25,6 +23,7 @@ export default function Profile() {
     username: currentUser.username,
     email: currentUser.email
   });
+  const [updateSuccess, setUpdateSuccess] = useState(false);
 
   useEffect(() => {
     if (image) {
@@ -78,20 +77,22 @@ export default function Profile() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     console.log(formData)
+    setUpdateSuccess(false);
     try {
-      dispatch(signInStart());
+      dispatch(updateUserStart());
       const res = await axios.post("/user/update-user", formData);
       console.log("res: ", res);
 
       if (res.data.success === false) {
-        dispatch(signInFailure(res.data.message));
+        dispatch(updateUserFailure(res.data.message));
         return;
       }
 
-      dispatch(signInSuccess(currentUser));
+      dispatch(updateUserSuccess(res.data));
+      setUpdateSuccess(true);
     } catch (error) {
       console.log("res: ", error);
-      dispatch(signInFailure(error));
+      dispatch(updateUserFailure(error));
     }
   };
 
@@ -154,6 +155,8 @@ export default function Profile() {
         <span className="text-red-700 cursor-pointer">Delete Account</span>
         <span className="text-red-700 cursor-pointer">Signout</span>
       </div>
+      <p className="text-red-700 mt-5">{ error ? error || "Error: Something went wrong." : "" }</p>
+      <p className="text-green-700 mt-5">{ updateSuccess && "User info was updated." }</p>
     </div>
   );
 }

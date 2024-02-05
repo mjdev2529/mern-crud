@@ -29,17 +29,18 @@ export const update = async (req, res, next) => {
       const sql = "SELECT * FROM user_tbl WHERE email = ?";
       const value = [email];
   
-      const checkUser = await queryHandler(sql, value);const validUser = JSON.parse(JSON.stringify(checkUser));
-      const token = jwt.sign({ id: validUser.user_id }, process.env.JWT_SECRET);
-      delete validUser.password;
-      const exp = new Date(Date.now() + 3600000); // Set expiry date to 1 hour from now
+      const checkUser = await queryHandler(sql, value);
+      const validUser = JSON.parse(JSON.stringify(checkUser));
+      // const token = jwt.sign({ id: validUser.user_id }, process.env.JWT_SECRET);
+      // delete validUser.password;
+      // const exp = new Date(Date.now() + 3600000); // Set expiry date to 1 hour from now
       res
-        .cookie("access_token", token, {
-          httpOnly: true,
-          expires: exp,
-          sameSite: "lax",
-          secure: false,
-        })
+        // .cookie("access_token", token, {
+        //   httpOnly: true,
+        //   expires: exp,
+        //   sameSite: "lax",
+        //   secure: false,
+        // })
         .status(200)
         .json(validUser);
     } catch (err) {
