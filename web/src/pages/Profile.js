@@ -7,7 +7,7 @@ import {
   uploadBytesResumable,
 } from "firebase/storage";
 import { app } from "../firebase";
-import { updateUserFailure, updateUserStart, updateUserSuccess } from "../redux/user/userSlice";
+import { deleteUserFailure, deleteUserStart, deleteUserSuccess, updateUserFailure, updateUserStart, updateUserSuccess } from "../redux/user/userSlice";
 import axios from "axios";
 
 export default function Profile() {
@@ -29,6 +29,7 @@ export default function Profile() {
     if (image) {
       handleFileUpload(image);
     }
+    dispatch(updateUserFailure());
   }, [image]);
 
   const handleFileUpload = async (image) => {
@@ -74,7 +75,7 @@ export default function Profile() {
     setFormData({ ...formData, [id]: value });
   };
 
-  const handleSubmit = async (e) => {
+  const handleUpdate = async (e) => {
     e.preventDefault();
     console.log(formData)
     setUpdateSuccess(false);
@@ -96,10 +97,32 @@ export default function Profile() {
     }
   };
 
+  const handleDeleteAccount = async () => {
+    const toBeDeleted = { user_id: currentUser.user_id };
+    try {
+      dispatch(deleteUserStart());
+      const res = await axios.post("/user/delete-user", toBeDeleted);
+      console.log("res: ", res);
+
+      if (res.data.success === false) {
+        dispatch(deleteUserFailure(res.data.message));
+        return;
+      }
+
+      dispatch(deleteUserSuccess());
+      setUpdateSuccess(true);
+    } catch (error) {
+      console.log("res: ", error);
+      dispatch(deleteUserFailure(error));
+    }
+  }
+
+  console.log(error)
+
   return (
     <div className="p-3 max-w-lg mx-auto">
       <h1 className="text-3xl text-center font-semibold my-7">Profile</h1>
-      <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+      <form onSubmit={handleUpdate} className="flex flex-col gap-4">
         <input
           type="file"
           ref={fileRef}
@@ -152,10 +175,10 @@ export default function Profile() {
         </button>
       </form>
       <div className="flex justify-between mt-5">
-        <span className="text-red-700 cursor-pointer">Delete Account</span>
+        <span onClick={handleDeleteAccount} className="text-red-700 cursor-pointer">Delete Account</span>
         <span className="text-red-700 cursor-pointer">Signout</span>
       </div>
-      <p className="text-red-700 mt-5">{ error ? error || "Error: Something went wrong." : "" }</p>
+      <p className="text-red-700 mt-5">{ error ? error.message || "Error: Something went wrong." : "" }</p>
       <p className="text-green-700 mt-5">{ updateSuccess && "User info was updated." }</p>
     </div>
   );
