@@ -7,7 +7,15 @@ import {
   uploadBytesResumable,
 } from "firebase/storage";
 import { app } from "../firebase";
-import { deleteUserFailure, deleteUserStart, deleteUserSuccess, updateUserFailure, updateUserStart, updateUserSuccess } from "../redux/user/userSlice";
+import {
+  deleteUserFailure,
+  deleteUserStart,
+  deleteUserSuccess,
+  signOut,
+  updateUserFailure,
+  updateUserStart,
+  updateUserSuccess,
+} from "../redux/user/userSlice";
 import axios from "axios";
 
 export default function Profile() {
@@ -21,7 +29,7 @@ export default function Profile() {
   const [formData, setFormData] = useState({
     user_id: currentUser.user_id,
     username: currentUser.username,
-    email: currentUser.email
+    email: currentUser.email,
   });
   const [updateSuccess, setUpdateSuccess] = useState(false);
 
@@ -77,7 +85,7 @@ export default function Profile() {
 
   const handleUpdate = async (e) => {
     e.preventDefault();
-    console.log(formData)
+    console.log(formData);
     setUpdateSuccess(false);
     try {
       dispatch(updateUserStart());
@@ -115,9 +123,16 @@ export default function Profile() {
       console.log("res: ", error);
       dispatch(deleteUserFailure(error));
     }
-  }
+  };
 
-  console.log(error)
+  const handleSignOut = async () => {
+    try {
+      await axios.get("/auth/signout");
+      dispatch(signOut());
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   return (
     <div className="p-3 max-w-lg mx-auto">
@@ -175,11 +190,22 @@ export default function Profile() {
         </button>
       </form>
       <div className="flex justify-between mt-5">
-        <span onClick={handleDeleteAccount} className="text-red-700 cursor-pointer">Delete Account</span>
-        <span className="text-red-700 cursor-pointer">Signout</span>
+        <span
+          onClick={handleDeleteAccount}
+          className="text-red-700 cursor-pointer"
+        >
+          Delete Account
+        </span>
+        <span onClick={handleSignOut} className="text-red-700 cursor-pointer">
+          Signout
+        </span>
       </div>
-      <p className="text-red-700 mt-5">{ error ? error.message || "Error: Something went wrong." : "" }</p>
-      <p className="text-green-700 mt-5">{ updateSuccess && "User info was updated." }</p>
+      <p className="text-red-700 mt-5">
+        {error ? error.message || "Error: Something went wrong." : ""}
+      </p>
+      <p className="text-green-700 mt-5">
+        {updateSuccess && "User info was updated."}
+      </p>
     </div>
   );
 }

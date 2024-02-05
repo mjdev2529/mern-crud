@@ -31,6 +31,7 @@ export const update = async (req, res, next) => {
   
       const checkUser = await queryHandler(sql, value);
       const validUser = JSON.parse(JSON.stringify(checkUser));
+      delete validUser.password;
       res
         .status(200)
         .json(validUser);
