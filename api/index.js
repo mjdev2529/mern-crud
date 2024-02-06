@@ -5,6 +5,7 @@ import cors from "cors";
 import cookieParser from "cookie-parser";
 import userRoutes from "./routes/user.route.js";
 import authRoutes from "./routes/auth.route.js";
+import credentialRoutes from "./routes/credentials.route.js";
 dotenv.config();
 
 // mongoose
@@ -31,6 +32,7 @@ app.listen(process.env.PORT);
 // routes
 app.use("/api/user", userRoutes);
 app.use("/api/auth", authRoutes);
+app.use("/api/credentials", credentialRoutes);
 
 
 app.use((err, req, res, next) => {

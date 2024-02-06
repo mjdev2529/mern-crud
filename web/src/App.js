@@ -6,6 +6,7 @@ import SignIn from "./pages/SignIn";
 import SignUp from "./pages/SignUp";
 import Header from "./layout/Header";
 import PrivateRoute from "./helper/PrivateRoute";
+import EditCredentials from "./pages/EditCredentials";
 
 export default function App() {
   return (
@@ -19,6 +20,7 @@ export default function App() {
         <Route element={<PrivateRoute />}>
           <Route path="/profile" element={<Profile />} />
           <Route path="/home" element={<Home />} />
+          <Route path="/edit-credentials" element={<EditCredentials />} />
         </Route>
       </Routes>
     </BrowserRouter>
