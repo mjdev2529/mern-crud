@@ -3,13 +3,18 @@ import Modal from "../component/Modal";
 import axios from "axios";
 import { useDispatch, useSelector } from "react-redux";
 import moment from "moment";
-import { FaArrowRight, FaFacebook, FaGoogle, FaInstagramSquare } from "react-icons/fa";
-import { FiEdit3, FiTrash2 } from "react-icons/fi"
+import {
+  FaArrowRight,
+  FaFacebook,
+  FaGoogle,
+  FaInstagramSquare,
+} from "react-icons/fa";
+import { FiEdit3, FiTrash2 } from "react-icons/fi";
 import { useNavigate } from "react-router-dom";
 import { setCredsData } from "../redux/user/userSlice";
 
 export default function Home() {
-  const { currentUser } = useSelector((state) => state.user);
+  const { currentUser, clientId } = useSelector((state) => state.user);
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
@@ -32,7 +37,9 @@ export default function Home() {
   }, []);
 
   const fetchUserPasswordList = async () => {
-    const userData = { user_id: currentUser.user_id };
+    const userData = {
+      user_id: currentUser.role === 0 ? currentUser.user_id : clientId,
+    };
     try {
       const res = await axios.post("/credentials/list", userData);
       console.log("user data list", res.data);
@@ -80,10 +87,10 @@ export default function Home() {
   const toggleDelete = (credential_id) => {
     setShowDeleteModal(true);
     setDeleteId(credential_id);
-  }
+  };
 
   const deleteCredentials = async () => {
-    const data = { credential_id: deleteId }
+    const data = { credential_id: deleteId };
     try {
       // console.log(deleteId)
       const res = await axios.post("/credentials/delete-credential", data);
@@ -95,24 +102,34 @@ export default function Home() {
       console.log(error);
       setError(error);
     }
-  }
+  };
 
   const toggleEdit = (data) => {
     dispatch(setCredsData(data));
     navigate("/edit-credentials");
-  }
+  };
 
   return (
     <div>
       <div className="flex flex-row justify-between px-5 mt-5">
         <h1 className="text-3xl text-center font-semibold">Password list</h1>
-        <button
-          onClick={handleModal}
-          type="button"
-          className="flex w-50 justify-center rounded-md bg-slate-700 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:opacity-95 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
-        >
-          Add
-        </button>
+        {currentUser.role === 0 ? (
+          <button
+            onClick={handleModal}
+            type="button"
+            className="flex w-50 justify-center rounded-md bg-slate-700 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:opacity-95 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+          >
+            Add
+          </button>
+        ) : (
+          <button
+            type="button"
+            onClick={() => navigate("/home")}
+            className="bg-slate-700 py-2 px-3 rounded-lg hover:opacity-95 text-white"
+          >
+            Back to home
+          </button>
+        )}
       </div>
       <div className="px-5">
         <div className="font-sans overflow-hidden">
@@ -121,62 +138,94 @@ export default function Home() {
               <table className="w-full border-collapse bg-white text-left text-sm text-gray-500">
                 <thead className="bg-gray-50">
                   <tr>
-                    <th scope="col" className="px-6 py-4 font-medium text-gray-900">
+                    <th
+                      scope="col"
+                      className="px-6 py-4 font-medium text-gray-900"
+                    >
                       Platform
-                    </th>
-                    <th scope="col" className="px-6 py-4 font-medium text-gray-900">
-                      Username
-                    </th>
-                    <th scope="col" className="px-6 py-4 font-medium text-gray-900">
-                      Notes
-                    </th>
-                    <th scope="col" className="px-6 py-4 font-medium text-gray-900">
-                      Last Updated
                     </th>
                     <th
                       scope="col"
                       className="px-6 py-4 font-medium text-gray-900"
-                    ></th>
+                    >
+                      Username
+                    </th>
+                    <th
+                      scope="col"
+                      className="px-6 py-4 font-medium text-gray-900"
+                    >
+                      Notes
+                    </th>
+                    <th
+                      scope="col"
+                      className="px-6 py-4 font-medium text-gray-900"
+                    >
+                      Last Updated
+                    </th>
+                    {currentUser.role === 0 && (
+                      <th
+                        scope="col"
+                        className="px-6 py-4 font-medium text-gray-900"
+                      ></th>
+                    )}
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-100 border-t border-gray-100">
-                  {listData.length > 0 &&
-                    listData.map((item) => {
-                      return (
-                        <tr key={item.credential_id} className="hover:bg-gray-50">
-                          <th className="flex gap-3 px-6 py-4 font-normal text-gray-900">
-                            <div className="flex items-center h-10 w-10">
-                              {
-                                item.platform === "google" ? <FaGoogle size={35}/> : ( item.platform === "facebook" ? <FaFacebook size={35} /> : <FaInstagramSquare size={35} /> )
-                              }
-                            </div>
-                            <div className="text-sm">
-                              <div className="font-medium text-gray-700 capitalize mb-1 text-lg">
-                                {item.platform}
+                  { listData.length > 0 ?
+                    (
+                      listData.map((item) => {
+                        return (
+                          <tr
+                            key={item.credential_id}
+                            className="hover:bg-gray-50"
+                          >
+                            <th className="flex gap-3 px-6 py-4 font-normal text-gray-900">
+                              <div className="flex items-center h-10 w-10">
+                                {item.platform === "google" ? (
+                                  <FaGoogle size={35} />
+                                ) : item.platform === "facebook" ? (
+                                  <FaFacebook size={35} />
+                                ) : (
+                                  <FaInstagramSquare size={35} />
+                                )}
                               </div>
-                              <button className="border border-blue-500 text-blue-500 p-1 rounded-lg text-xs flex items-center gap-x-2">Access account <FaArrowRight className="h-4 w-4" /></button>
-                            </div>
-                          </th>
-                          <td className="px-6 py-4">
-                            {item.username}
-                          </td>
-                          <td className="px-6 py-4">{item.notes}</td>
-                          <td className="px-6 py-4">
-                            {moment(item.updatedon).format("YYYY-MM-DD h:m A")}
-                          </td>
-                          <td className="px-6 py-4">
-                            <div className="flex justify-end gap-4">
-                              <a href="#" onClick={()=>toggleDelete(item.credential_id)}>
-                                <FiTrash2 size={20} />
-                              </a>
-                              <a href="#" onClick={()=>toggleEdit(item)}>
-                                <FiEdit3 size={20} />
-                              </a>
-                            </div>
-                          </td>
-                        </tr>
-                      );
-                    })}
+                              <div className="text-sm">
+                                <div className="font-medium text-gray-700 capitalize mb-1 text-lg">
+                                  {item.platform}
+                                </div>
+                                <button className="border border-blue-500 text-blue-500 p-1 rounded-lg text-xs flex items-center gap-x-2">
+                                  Access account{" "}
+                                  <FaArrowRight className="h-4 w-4" />
+                                </button>
+                              </div>
+                            </th>
+                            <td className="px-6 py-4">{item.username}</td>
+                            <td className="px-6 py-4">{item.notes}</td>
+                            <td className="px-6 py-4">
+                              {moment(item.updatedon).format("YYYY-MM-DD h:m A")}
+                            </td>
+                            {currentUser.role === 0 && (
+                              <td className="px-6 py-4">
+                                <div className="flex justify-end gap-4">
+                                  <a
+                                    href="#"
+                                    onClick={() =>
+                                      toggleDelete(item.credential_id)
+                                    }
+                                  >
+                                    <FiTrash2 size={20} />
+                                  </a>
+                                  <a href="#" onClick={() => toggleEdit(item)}>
+                                    <FiEdit3 size={20} />
+                                  </a>
+                                </div>
+                              </td>
+                            )}
+                          </tr>
+                        );
+                    })):(
+                      <td colSpan={5} className="px-6 py-4">No data available.</td>
+                    )}
                 </tbody>
               </table>
             </div>
@@ -186,7 +235,7 @@ export default function Home() {
 
       <Modal
         open={showModal}
-        setShowModal={setShowModal}
+        onClose={()=>setShowModal(false)}
         title=""
         hasFooter={false}
         customTitleClass={"text-center"}
@@ -315,12 +364,10 @@ export default function Home() {
 
       <Modal
         open={showDeleteModal}
-        setShowModal={setShowDeleteModal}
+        onClose={()=>setShowDeleteModal(false)}
         title=""
         btnText="Delete"
-        content={
-          <h1 className="font-medium">Are you sure to delete?</h1>
-        }
+        content={<h1 className="font-medium">Are you sure to delete?</h1>}
         toggleButtonMain={deleteCredentials}
       />
     </div>

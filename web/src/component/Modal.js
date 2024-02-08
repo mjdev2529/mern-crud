@@ -3,7 +3,7 @@ import { Dialog, Transition } from "@headlessui/react";
 
 export default function Modal({
   open,
-  setShowModal,
+  onClose,
   title,
   content,
   hasFooter = true,
@@ -20,7 +20,7 @@ export default function Modal({
         as="div"
         className="relative z-10"
         initialFocus={cancelButtonRef}
-        onClose={setShowModal}
+        onClose={onClose}
       >
         <Transition.Child
           as={Fragment}
@@ -78,7 +78,7 @@ export default function Modal({
                     <button
                       type="button"
                       className="mt-3 inline-flex w-full justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 sm:mt-0 sm:w-auto"
-                      onClick={() => setShowModal(false)}
+                      onClick={onClose}
                       ref={cancelButtonRef}
                     >
                       Cancel

@@ -67,12 +67,12 @@ export default function SignIn() {
         </button>
         <OAuth />
       </form>
-      <div className="flex gap-2 mt-5">
+      {/* <div className="flex gap-2 mt-5">
         <p>Don't have an account?</p>
         <Link to="/sign-up">
           <span className="text-blue-500">Sign up</span>
         </Link>
-      </div>
+      </div> */}
       <p className="text-red-700 mt-5">{ error ? error || "Error: Something went wrong." : "" }</p>
     </div>
   )

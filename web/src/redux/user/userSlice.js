@@ -4,7 +4,8 @@ const initialState = {
   currentUser: null,
   loading: false,
   error: false,
-  credsData: null
+  credsData: null,
+  clientId: null
 };
 
 const userSlice = createSlice({
@@ -70,7 +71,10 @@ const userSlice = createSlice({
     clearStatus: (state) => {
       state.loading = false;
       state.error = false;
-    }
+    },
+    setClientId: (state, action) => {
+      state.clientId = action.payload;
+    },
   },
 });
 
@@ -89,6 +93,7 @@ export const {
   setStart,
   setSuccess,
   setFailure,
-  clearStatus
+  clearStatus,
+  setClientId
 } = userSlice.actions;
 export default userSlice.reducer;

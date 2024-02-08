@@ -5,10 +5,16 @@ import Profile from "./pages/Profile";
 import SignIn from "./pages/SignIn";
 import SignUp from "./pages/SignUp";
 import Header from "./layout/Header";
-import PrivateRoute from "./helper/PrivateRoute";
 import EditCredentials from "./pages/EditCredentials";
+import HomeAdmin from "./pages/HomeAdmin";
+
+import PrivateRoute from "./helper/PrivateRoute";
+import { useSelector } from "react-redux";
 
 export default function App() {
+
+  const { currentUser } = useSelector((state) => state.user);
+
   return (
     <BrowserRouter>
       <Header />
@@ -16,11 +22,20 @@ export default function App() {
         {/* <Route path="/about" element={<About />} /> */}
         <Route path="/" element={<SignIn />} />
         <Route path="/sign-in" element={<SignIn />} />
-        <Route path="/sign-up" element={<SignUp />} />
+        {/* <Route path="/sign-up" element={<SignUp />} /> */}
         <Route element={<PrivateRoute />}>
           <Route path="/profile" element={<Profile />} />
-          <Route path="/home" element={<Home />} />
-          <Route path="/edit-credentials" element={<EditCredentials />} />
+          {currentUser && currentUser.role === 0 ? (
+            <>
+              <Route path="/home" element={<Home />} />
+              <Route path="/edit-credentials" element={<EditCredentials />} />
+            </>
+          ):(
+            <>
+              <Route path="/home" element={<HomeAdmin />} />
+              <Route path="/view-client" element={<Home />} />
+            </>
+          )}
         </Route>
       </Routes>
     </BrowserRouter>

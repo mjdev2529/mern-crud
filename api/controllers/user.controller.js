@@ -1,4 +1,4 @@
-import { queryHandler } from "../utils/query.js";
+import { getMany, queryHandler } from "../utils/query.js";
 import jwt from "jsonwebtoken";
 import bcrypt from "bcryptjs";
 
@@ -55,5 +55,44 @@ export const deleteUser = async (req, res, next) => {
     res.status(200).json("Account successfully deleted.");
   } catch (error) {
     next(error);
+  }
+}
+
+export const userList = async (req, res, next) => {
+
+  let sql = "SELECT * FROM user_tbl WHERE role != ?";
+  let values = [1];
+
+  try {
+    const result = await getMany(sql, values);
+    let userData = JSON.parse(JSON.stringify(result));
+
+    userData = userData.map(async (item) => {
+      const total_credentials = await countCredentials(item.user_id);
+      const newItem = {...item, total_credentials};
+      delete newItem.password;
+      return newItem;
+    });
+
+    Promise.all(userData).then((completedUserData) => {
+      res.status(200).json(completedUserData);
+    });
+  } catch (err) {
+    console.log(err);
+    next(err);
+  }
+};
+
+const countCredentials = async (userId) => {
+  let sql = "SELECT count(credential_id) as totalCredentials FROM credentials_tbl WHERE user_id = ?";
+  let values = [userId];
+
+  try {
+    const result = await queryHandler(sql, values);
+    const { totalCredentials } = JSON.parse(JSON.stringify(result));
+    return totalCredentials;
+  } catch (err) {
+    console.log(err);
+    next(err);
   }
 }
