@@ -171,61 +171,65 @@ export default function Home() {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-100 border-t border-gray-100">
-                  { listData.length > 0 ?
-                    (
-                      listData.map((item) => {
-                        return (
-                          <tr
-                            key={item.credential_id}
-                            className="hover:bg-gray-50"
-                          >
-                            <th className="flex gap-3 px-6 py-4 font-normal text-gray-900">
-                              <div className="flex items-center h-10 w-10">
-                                {item.platform === "google" ? (
-                                  <FaGoogle size={35} />
-                                ) : item.platform === "facebook" ? (
-                                  <FaFacebook size={35} />
-                                ) : (
-                                  <FaInstagramSquare size={35} />
-                                )}
+                  {listData.length > 0 ? (
+                    listData.map((item) => {
+                      return (
+                        <tr
+                          key={item.credential_id}
+                          className="hover:bg-gray-50"
+                        >
+                          <th className="flex gap-3 px-6 py-4 font-normal text-gray-900">
+                            <div className="flex items-center h-10 w-10">
+                              {item.platform === "google" ? (
+                                <FaGoogle size={35} />
+                              ) : item.platform === "facebook" ? (
+                                <FaFacebook size={35} />
+                              ) : (
+                                <FaInstagramSquare size={35} />
+                              )}
+                            </div>
+                            <div className="text-sm">
+                              <div className="font-medium text-gray-700 capitalize mb-1 text-lg">
+                                {item.platform}
                               </div>
-                              <div className="text-sm">
-                                <div className="font-medium text-gray-700 capitalize mb-1 text-lg">
-                                  {item.platform}
-                                </div>
-                                <button className="border border-blue-500 text-blue-500 p-1 rounded-lg text-xs flex items-center gap-x-2">
-                                  Access account{" "}
-                                  <FaArrowRight className="h-4 w-4" />
-                                </button>
-                              </div>
-                            </th>
-                            <td className="px-6 py-4">{item.username}</td>
-                            <td className="px-6 py-4">{item.notes}</td>
+                              <button className="border border-blue-500 text-blue-500 p-1 rounded-lg text-xs flex items-center gap-x-2">
+                                Access account{" "}
+                                <FaArrowRight className="h-4 w-4" />
+                              </button>
+                            </div>
+                          </th>
+                          <td className="px-6 py-4">{item.username}</td>
+                          <td className="px-6 py-4">{item.notes}</td>
+                          <td className="px-6 py-4">
+                            {moment(item.updatedon).format("YYYY-MM-DD h:m A")}
+                          </td>
+                          {currentUser.role === 0 && (
                             <td className="px-6 py-4">
-                              {moment(item.updatedon).format("YYYY-MM-DD h:m A")}
+                              <div className="flex justify-end gap-4">
+                                <a
+                                  href="#"
+                                  onClick={() =>
+                                    toggleDelete(item.credential_id)
+                                  }
+                                >
+                                  <FiTrash2 size={20} />
+                                </a>
+                                <a href="#" onClick={() => toggleEdit(item)}>
+                                  <FiEdit3 size={20} />
+                                </a>
+                              </div>
                             </td>
-                            {currentUser.role === 0 && (
-                              <td className="px-6 py-4">
-                                <div className="flex justify-end gap-4">
-                                  <a
-                                    href="#"
-                                    onClick={() =>
-                                      toggleDelete(item.credential_id)
-                                    }
-                                  >
-                                    <FiTrash2 size={20} />
-                                  </a>
-                                  <a href="#" onClick={() => toggleEdit(item)}>
-                                    <FiEdit3 size={20} />
-                                  </a>
-                                </div>
-                              </td>
-                            )}
-                          </tr>
-                        );
-                    })):(
-                      <td colSpan={5} className="px-6 py-4">No data available.</td>
-                    )}
+                          )}
+                        </tr>
+                      );
+                    })
+                  ) : (
+                    <tr>
+                      <td colSpan={5} className="px-6 py-4">
+                        No data available.
+                      </td>
+                    </tr>
+                  )}
                 </tbody>
               </table>
             </div>
@@ -235,7 +239,7 @@ export default function Home() {
 
       <Modal
         open={showModal}
-        onClose={()=>setShowModal(false)}
+        onClose={() => setShowModal(false)}
         title=""
         hasFooter={false}
         customTitleClass={"text-center"}
@@ -364,7 +368,7 @@ export default function Home() {
 
       <Modal
         open={showDeleteModal}
-        onClose={()=>setShowDeleteModal(false)}
+        onClose={() => setShowDeleteModal(false)}
         title=""
         btnText="Delete"
         content={<h1 className="font-medium">Are you sure to delete?</h1>}
